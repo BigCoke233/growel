@@ -38,7 +38,6 @@ func (r *Router) Find(method string, path string) (Handler, map[string]string) {
 			continue
 		}
 
-
 		// compare each segment
 		params := make(map[string]string)
 		matched := true
@@ -70,8 +69,8 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 	handler(&Context{
-	    W:      w,
-	    R:      req,
-	    Params: params,
+		W:      w,
+		R:      req,
+		Params: params,
 	})
 }
