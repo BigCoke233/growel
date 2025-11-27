@@ -1,7 +1,6 @@
 package growel
 
 import (
-	"net/http"
 	"strings"
 )
 
@@ -64,17 +63,4 @@ func (r *Router) Find(method string, path string) (Handler, map[string]string) {
 		}
 	}
 	return nil, nil
-}
-
-func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-	handler, params := r.Find(req.Method, req.URL.Path)
-	if handler == nil {
-		http.NotFound(w, req)
-		return
-	}
-	handler(&Context{
-		W:      w,
-		R:      req,
-		Params: params,
-	})
 }
