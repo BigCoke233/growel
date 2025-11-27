@@ -1,18 +1,35 @@
 package growel
 
 import (
-
+	"net/http"
 )
 
-type growel struct { }
-
-func (growel) New() (*growel) {
-	return &growel{}
+type Api struct {
+	router *Router
 }
 
-func (*growel) GET() {}
-func (*growel) POST() {}
-func (*growel) PUT() {}
-func (*growel) DELETE() {}
+func New() *Api {
+	var a Api
+	a.router = NewRouter()
+	return &a
+}
 
-func (*growel) Start() {}
+func (api *Api) Start(port string) {
+	http.ListenAndServe(port, api.router)
+}
+
+func (api *Api) GET(path string, h Handler) {
+	api.router.Add("GET", path, h)
+}
+
+func (api *Api) POST(path string, h Handler) {
+	api.router.Add("POST", path, h)
+}
+
+func (api *Api) PUT(path string, h Handler) {
+	api.router.Add("PUT", path, h)
+}
+
+func (api *Api) DELETE(path string, h Handler) {
+	api.router.Add("DELETE", path, h)
+}
