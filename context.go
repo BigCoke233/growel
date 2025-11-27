@@ -6,12 +6,6 @@ import (
 	"strconv"
 )
 
-type Context struct {
-	W      http.ResponseWriter
-	R      *http.Request
-	Params map[string]string
-}
-
 func (c *Context) Plain(code int, data string) {
 	c.W.Header().Set("Content-Type", "text/plain; charset=utf-8")
 	c.W.WriteHeader(code)
@@ -49,5 +43,3 @@ func (c *Context) Unauthorized(msg string) {
 func (c *Context) InternalError(msg string) {
 	c.Error(http.StatusInternalServerError, msg)
 }
-
-type Handler func(c *Context)

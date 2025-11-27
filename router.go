@@ -4,16 +4,6 @@ import (
 	"strings"
 )
 
-type route struct {
-	method  string
-	parts   []string
-	handler Handler
-}
-
-type Router struct {
-	routes []route
-}
-
 func NewRouter() *Router {
 	return &Router{}
 }
@@ -24,7 +14,7 @@ func (r *Router) splitPath(path string) []string {
 
 func (r *Router) Add(method string, path string, h Handler) {
 	parts := r.splitPath(path)
-	r.routes = append(r.routes, route{method, parts, h})
+	r.routes = append(r.routes, Route{method, parts, h})
 }
 
 func (r *Router) Find(method string, path string) (Handler, map[string]string) {
