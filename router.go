@@ -19,13 +19,17 @@ func NewRouter() *Router {
 	return &Router{}
 }
 
+func (r *Router) splitPath(path string) []string {
+	return strings.Split(strings.Trim(path, "/"), "/")
+}
+
 func (r *Router) Add(method string, path string, h Handler) {
-	parts := strings.Split(path, "/")
+	parts := r.splitPath(path)
 	r.routes = append(r.routes, route{method, parts, h})
 }
 
 func (r *Router) Find(method string, path string) (Handler, map[string]string) {
-	parts := strings.Split(path, "/")
+	parts := r.splitPath(path)
 
 	for _, rt := range r.routes {
 		// match HTTP method
