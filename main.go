@@ -1,5 +1,0 @@
-package growel
-
-func main() {
-
-}
