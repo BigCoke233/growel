@@ -33,7 +33,7 @@ func (api *Engine) DELETE(path string, h Handler) {
 // serve and start
 
 func (a *Engine) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-	handler, params := a.router.Find(req.Method, req.URL.Path)
+	handler, params, query := a.router.Find(req.Method, req.URL.Path)
 	if handler == nil {
 		http.NotFound(w, req)
 		return
@@ -42,6 +42,7 @@ func (a *Engine) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		W:      w,
 		R:      req,
 		Params: params,
+		Querys:	query,
 	})
 }
 

@@ -10,7 +10,7 @@ func TestRouterStaticMatch(t *testing.T) {
 	r := NewRouter()
 	r.Add("GET", "/hello", dummy)
 
-	h, params := r.Find("GET", "/hello")
+	h, params, _ := r.Find("GET", "/hello")
 	if h == nil {
 		t.Fatal("expected handler, got nil")
 	}
@@ -23,7 +23,7 @@ func TestRouterStaticNoMatch(t *testing.T) {
 	r := NewRouter()
 	r.Add("GET", "/hello", dummy)
 
-	h, _ := r.Find("GET", "/nothello")
+	h, _, _ := r.Find("GET", "/nothello")
 	if h != nil {
 		t.Fatal("expected nil handler, got non-nil")
 	}
@@ -33,7 +33,7 @@ func TestRouterParamMatch(t *testing.T) {
 	r := NewRouter()
 	r.Add("GET", "/user/:id", dummy)
 
-	h, params := r.Find("GET", "/user/42")
+	h, params, _ := r.Find("GET", "/user/42")
 	if h == nil {
 		t.Fatal("expected handler, got nil")
 	}
@@ -46,34 +46,21 @@ func TestRouterParamMismatch(t *testing.T) {
 	r := NewRouter()
 	r.Add("GET", "/user/:id", dummy)
 
-	h, _ := r.Find("GET", "/user")
+	h, _, _ := r.Find("GET", "/user")
 	if h != nil {
 		t.Fatal("expected nil handler, got non-nil")
 	}
 }
 
-func TestRouterSplitPath(t *testing.T) {
+func TestRouterQueryMatch(t *testing.T) {
 	r := NewRouter()
+	r.Add("GET", "/user", dummy)
 
-	tests := []struct {
-		input string
-		want  []string
-	}{
-		{"/", []string{""}},
-		{"/hello", []string{"hello"}},
-		{"/hello/world", []string{"hello", "world"}},
-		{"//hello//world//", []string{"hello", "", "world"}},
+	h, _, query := r.Find("GET", "/user?id=42")
+	if h == nil {
+		t.Fatal("expected handler, got nil")
 	}
-
-	for _, tt := range tests {
-		got := r.splitPath(tt.input)
-		if len(got) != len(tt.want) {
-			t.Fatalf("splitPath(%q) length mismatch: got %v want %v", tt.input, got, tt.want)
-		}
-		for i := range got {
-			if got[i] != tt.want[i] {
-				t.Fatalf("splitPath(%q) mismatch: got %v want %v", tt.input, got, tt.want)
-			}
-		}
+	if query["id"] != "42" {
+		t.Fatalf("expected id=42, got %v", query)
 	}
 }

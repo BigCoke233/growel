@@ -8,17 +8,14 @@ func NewRouter() *Router {
 	return &Router{}
 }
 
-func (r *Router) splitPath(path string) []string {
-	return strings.Split(strings.Trim(path, "/"), "/")
-}
-
 func (r *Router) Add(method string, path string, h Handler) {
-	parts := r.splitPath(path)
+	parts, _ := ParsePath(path)
 	r.routes = append(r.routes, Route{method, parts, h})
 }
 
-func (r *Router) Find(method string, path string) (Handler, map[string]string) {
-	parts := r.splitPath(path)
+func (r *Router) Find(method string, path string) (
+	handler Handler, params map[string]string, query map[string]string) {
+	parts, query := ParsePath(path)
 
 	for _, rt := range r.routes {
 		// match HTTP method
@@ -49,8 +46,8 @@ func (r *Router) Find(method string, path string) (Handler, map[string]string) {
 			}
 		}
 		if matched {
-			return rt.handler, params
+			return rt.handler, params, query
 		}
 	}
-	return nil, nil
+	return nil, nil, nil
 }
