@@ -1,5 +1,7 @@
 # Growel
 
+![](https://github.com/BigCoke233/growel/actions/workflows/go.yml/badge.svg)
+
 **Minimal, headless, zero-dependency Web framework written in Go.** This is toy software I develop to learn, so do not use in production.
 
 ## Usage
