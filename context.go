@@ -66,6 +66,12 @@ func (c *Context) Unauthorized(msg string) {
 	c.Error(http.StatusUnauthorized, msg)
 }
 
+// Forbidden is a shortcut to write 403 Error to response writer
+// this is based on Error function
+func (c *Context) Forbidden(msg string) {
+	c.Error(http.StatusForbidden, msg)
+}
+
 // InternalError is a shortcut to write 500 Error to response writer
 // this is based on Error function
 func (c *Context) InternalError(msg string) {
