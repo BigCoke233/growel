@@ -62,3 +62,103 @@ func TestContextError(t *testing.T) {
 		t.Fatalf("missing status field: %s", body)
 	}
 }
+
+func TestContextCookies(t *testing.T) {
+	r := httptest.NewRequest("GET", "/", nil)
+	r.AddCookie(&http.Cookie{Name: "a", Value: "1"})
+	r.AddCookie(&http.Cookie{Name: "b", Value: "2"})
+
+	c := &Context{R: r}
+
+	cookies := c.Cookies()
+	if len(cookies) != 2 {
+		t.Fatalf("expected 2 cookies, got %d", len(cookies))
+	}
+}
+
+func TestContextCookieFound(t *testing.T) {
+	r := httptest.NewRequest("GET", "/", nil)
+	r.AddCookie(&http.Cookie{Name: "token", Value: "xyz"})
+
+	c := &Context{R: r}
+
+	ck := c.Cookie("token")
+	if ck == nil {
+		t.Fatalf("expected cookie token, got nil")
+	}
+	if ck.Value != "xyz" {
+		t.Fatalf("expected value xyz, got %s", ck.Value)
+	}
+}
+
+func TestContextCookieNotFound(t *testing.T) {
+	r := httptest.NewRequest("GET", "/", nil)
+	r.AddCookie(&http.Cookie{Name: "session", Value: "abc"})
+
+	c := &Context{R: r}
+
+	ck := c.Cookie("missing")
+	if ck != nil {
+		t.Fatalf("expected nil, got %#v", ck)
+	}
+}
+
+func TestContextSetCompleteCookie(t *testing.T) {
+	w := httptest.NewRecorder()
+	c := &Context{W: w}
+
+	cookie := &http.Cookie{
+		Name:  "x",
+		Value: "y",
+		Path:  "/",
+	}
+
+	c.SetCompleteCookie(cookie)
+
+	res := w.Result()
+	cs := res.Cookies()
+
+	if len(cs) != 1 {
+		t.Fatalf("expected 1 cookie, got %d", len(cs))
+	}
+
+	ck := cs[0]
+	if ck.Name != "x" || ck.Value != "y" {
+		t.Fatalf("unexpected cookie: %#v", ck)
+	}
+}
+
+func TestContextSetCookie(t *testing.T) {
+	w := httptest.NewRecorder()
+	c := &Context{W: w}
+
+	c.SetCookie("uid", "100")
+
+	res := w.Result()
+	cs := res.Cookies()
+
+	if len(cs) != 1 {
+		t.Fatalf("expected 1 cookie, got %d", len(cs))
+	}
+
+	ck := cs[0]
+
+	if ck.Name != "uid" || ck.Value != "100" {
+		t.Fatalf("unexpected cookie: %#v", ck)
+	}
+	if ck.Path != "/" {
+		t.Fatalf("wrong Path: %s", ck.Path)
+	}
+	if ck.MaxAge != 3600 {
+		t.Fatalf("wrong MaxAge: %d", ck.MaxAge)
+	}
+	if !ck.HttpOnly {
+		t.Fatalf("HttpOnly should be true")
+	}
+	if !ck.Secure {
+		t.Fatalf("Secure should be true")
+	}
+	if ck.SameSite != http.SameSiteLaxMode {
+		t.Fatalf("wrong SameSite: %v", ck.SameSite)
+	}
+}
