@@ -24,3 +24,8 @@ type Router struct {
 type Engine struct {
 	router *Router
 }
+
+type Group struct {
+	prefix string
+	engine *Engine
+}
