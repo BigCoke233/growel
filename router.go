@@ -8,11 +8,19 @@ func NewRouter() *Router {
 	return &Router{}
 }
 
+// Router.Add adds a route with specified method, path and handler
+// it splits path into segments for matching
 func (r *Router) Add(method string, path string, h Handler) {
 	parts, _ := ParsePath(path)
 	r.routes = append(r.routes, Route{method, parts, h})
 }
 
+// Router.Find finds route with same HTTP method and path
+// returns the handler, parameters and query
+//
+// handler is a function that wraps Context
+// params is a map of parameters from dynamic routing
+// query is a map of query parameters from URL
 func (r *Router) Find(method string, path string) (
 	handler Handler, params map[string]string, query map[string]string) {
 	parts, query := ParsePath(path)
