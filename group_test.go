@@ -92,6 +92,48 @@ func TestGroupServeHTTP(t *testing.T) {
 	}
 }
 
+func TestNestedGroup(t *testing.T) {
+	e := New()
+	e.Group("/api", func(api *Group) {
+		api.Group("v1", func(v1 *Group) {
+			v1.GET("/ping", func(c *Context) {
+				c.Plain(200, "pong")
+			})
+		})
+		api.Group("v2", func(v2 *Group) {
+			v2.GET("/ping", func(c *Context) {
+				c.Plain(200, "pong")
+			})
+		})
+	})
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "/api/v1/ping", nil)
+
+	e.ServeHTTP(w, req)
+
+	if w.Code != 200 {
+		t.Fatalf("expected 200, got %d", w.Code)
+	}
+
+	if body := w.Body.String(); body != "pong\n" && body != "pong" {
+		t.Fatalf("expected body 'pong', got '%s'", body)
+	}
+
+	w = httptest.NewRecorder()
+	req, _ = http.NewRequest("GET", "/api/v2/ping", nil)
+
+	e.ServeHTTP(w, req)
+
+	if w.Code != 200 {
+		t.Fatalf("expected 200, got %d", w.Code)
+	}
+
+	if body := w.Body.String(); body != "pong\n" && body != "pong" {
+		t.Fatalf("expected body 'pong', got '%s'", body)
+	}
+}
+
 // helper: convert []string{"api","ping"} → "api/ping"
 func joinParts(parts []string) string {
 	out := ""
