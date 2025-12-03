@@ -38,11 +38,19 @@ func (a *Engine) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		http.NotFound(w, req)
 		return
 	}
+
+	err := req.ParseForm()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
 	handler(&Context{
 		W:      w,
 		R:      req,
 		Params: params,
 		Querys: req.URL.Query(),
+		Form:   req.Form,
 	})
 }
 

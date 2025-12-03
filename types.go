@@ -10,6 +10,7 @@ type Context struct {
 	R      *http.Request
 	Params map[string]string
 	Querys url.Values
+	Form   url.Values
 }
 
 type Handler func(c *Context)
