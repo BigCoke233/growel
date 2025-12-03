@@ -44,9 +44,9 @@ func (c *Context) XML(code int, data string) {
 // error, message, status
 func (c *Context) Error(code int, msg string) {
 	c.JSON(code, map[string]string{
-		"error": http.StatusText(code),
+		"error":   http.StatusText(code),
 		"message": msg,
-		"status": strconv.Itoa(code),
+		"status":  strconv.Itoa(code),
 	})
 }
 
@@ -101,13 +101,13 @@ func (c *Context) SetCompleteCookie(cookie *http.Cookie) {
 
 func (c *Context) SetCookie(name string, value string) {
 	cookie := http.Cookie{
-        Name:     name,
-        Value:    value,
-        Path:     "/",
-        MaxAge:   3600,
-        HttpOnly: true,
-        Secure:   true,
-        SameSite: http.SameSiteLaxMode,
-    }
-    c.SetCompleteCookie(&cookie)
+		Name:     name,
+		Value:    value,
+		Path:     "/",
+		MaxAge:   3600,
+		HttpOnly: true,
+		Secure:   true,
+		SameSite: http.SameSiteLaxMode,
+	}
+	c.SetCompleteCookie(&cookie)
 }

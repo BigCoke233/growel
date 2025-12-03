@@ -6,12 +6,6 @@ import (
 	"testing"
 )
 
-/*
-   ======================================================
-                     Test Group()
-   ======================================================
-*/
-
 func TestGroupCallback(t *testing.T) {
 	e := New()
 
@@ -31,12 +25,6 @@ func TestGroupCallback(t *testing.T) {
 		t.Fatal("Group callback not invoked")
 	}
 }
-
-/*
-   ======================================================
-                 Test route registration
-   ======================================================
-*/
 
 func TestGroupRouteRegistration(t *testing.T) {
 	e := New()
@@ -81,24 +69,6 @@ func TestGroupRouteRegistration(t *testing.T) {
 	}
 }
 
-// helper: convert []string{"api","ping"} → "api/ping"
-func joinParts(parts []string) string {
-	out := ""
-	for i, p := range parts {
-		if i > 0 {
-			out += "/"
-		}
-		out += p
-	}
-	return out
-}
-
-/*
-   ======================================================
-              End-to-End ServeHTTP test
-   ======================================================
-*/
-
 func TestGroupServeHTTP(t *testing.T) {
 	e := New()
 
@@ -120,4 +90,16 @@ func TestGroupServeHTTP(t *testing.T) {
 	if body := w.Body.String(); body != "ok\n" && body != "ok" {
 		t.Fatalf("expected body 'ok', got '%s'", body)
 	}
+}
+
+// helper: convert []string{"api","ping"} → "api/ping"
+func joinParts(parts []string) string {
+	out := ""
+	for i, p := range parts {
+		if i > 0 {
+			out += "/"
+		}
+		out += p
+	}
+	return out
 }

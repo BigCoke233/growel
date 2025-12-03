@@ -20,8 +20,8 @@ func (e *Engine) Group(prefix string, fn func(*Group)) {
 
 // Group.Group creates a nested Group
 // joining all prefixes of parent groups
-func(g *Group) Group(prefix string, fn func(*Group)) {
-	nested := &Group {
+func (g *Group) Group(prefix string, fn func(*Group)) {
+	nested := &Group{
 		prefix: joinPath(g.prefix, prefix),
 		engine: g.engine,
 	}

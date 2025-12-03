@@ -42,7 +42,7 @@ func (a *Engine) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		W:      w,
 		R:      req,
 		Params: params,
-		Querys:	query,
+		Querys: query,
 	})
 }
 

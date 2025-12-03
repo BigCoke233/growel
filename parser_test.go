@@ -34,7 +34,7 @@ func TestRouterSplitPath(t *testing.T) {
 func TestExtractQueryStr(t *testing.T) {
 	tests := []struct {
 		input string
-		want1  string
+		want1 string
 		want2 string
 	}{
 		{"", "", ""},
