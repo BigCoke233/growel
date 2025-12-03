@@ -10,7 +10,7 @@ func TestRouterStaticMatch(t *testing.T) {
 	r := NewRouter()
 	r.Add("GET", "/hello", dummy)
 
-	h, params, _ := r.Find("GET", "/hello")
+	h, params := r.Find("GET", "/hello")
 	if h == nil {
 		t.Fatal("expected handler, got nil")
 	}
@@ -23,7 +23,7 @@ func TestRouterStaticNoMatch(t *testing.T) {
 	r := NewRouter()
 	r.Add("GET", "/hello", dummy)
 
-	h, _, _ := r.Find("GET", "/nothello")
+	h, _ := r.Find("GET", "/nothello")
 	if h != nil {
 		t.Fatal("expected nil handler, got non-nil")
 	}
@@ -33,7 +33,7 @@ func TestRouterParamMatch(t *testing.T) {
 	r := NewRouter()
 	r.Add("GET", "/user/:id", dummy)
 
-	h, params, _ := r.Find("GET", "/user/42")
+	h, params := r.Find("GET", "/user/42")
 	if h == nil {
 		t.Fatal("expected handler, got nil")
 	}
@@ -46,21 +46,8 @@ func TestRouterParamMismatch(t *testing.T) {
 	r := NewRouter()
 	r.Add("GET", "/user/:id", dummy)
 
-	h, _, _ := r.Find("GET", "/user")
+	h, _ := r.Find("GET", "/user")
 	if h != nil {
 		t.Fatal("expected nil handler, got non-nil")
-	}
-}
-
-func TestRouterQueryMatch(t *testing.T) {
-	r := NewRouter()
-	r.Add("GET", "/user", dummy)
-
-	h, _, query := r.Find("GET", "/user?id=42")
-	if h == nil {
-		t.Fatal("expected handler, got nil")
-	}
-	if query["id"] != "42" {
-		t.Fatalf("expected id=42, got %v", query)
 	}
 }
