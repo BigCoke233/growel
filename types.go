@@ -1,12 +1,15 @@
 package growel
 
-import "net/http"
+import (
+	"net/http"
+	"net/url"
+)
 
 type Context struct {
 	W      http.ResponseWriter
 	R      *http.Request
 	Params map[string]string
-	Querys map[string]string
+	Querys url.Values
 }
 
 type Handler func(c *Context)
