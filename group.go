@@ -18,6 +18,17 @@ func (e *Engine) Group(prefix string, fn func(*Group)) {
 	fn(g)
 }
 
+// Group.Group creates a nested Group
+// joining all prefixes of parent groups
+func(g *Group) Group(prefix string, fn func(*Group)) {
+	nested := &Group {
+		prefix: joinPath(g.prefix, prefix),
+		engine: g.engine,
+	}
+
+	fn(nested)
+}
+
 /* Inherit Engine methods */
 
 func (g *Group) GET(path string, handler Handler) {
