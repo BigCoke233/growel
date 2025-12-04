@@ -1,12 +1,12 @@
 package growel
 
 import (
+	"bytes"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"strings"
 	"testing"
-	"net/url"
-	"bytes"
 )
 
 func TestContextPlain(t *testing.T) {
@@ -185,8 +185,8 @@ func TestContextFormValue(t *testing.T) {
 	}
 
 	c := &Context{
-		R:     req,
-		Form:  req.Form,
+		R:      req,
+		Form:   req.Form,
 		Querys: req.URL.Query(),
 	}
 
@@ -208,9 +208,9 @@ func TestContextPostFormValue(t *testing.T) {
 	req.ParseForm()
 
 	c := &Context{
-		R:     req,
+		R:      req,
 		Querys: req.URL.Query(),
-		Form:  req.Form,
+		Form:   req.Form,
 	}
 
 	// PostFormValue should NOT include query
