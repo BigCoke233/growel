@@ -5,6 +5,8 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+	"net/url"
+	"bytes"
 )
 
 func TestContextPlain(t *testing.T) {
@@ -160,5 +162,137 @@ func TestContextSetCookie(t *testing.T) {
 	}
 	if ck.SameSite != http.SameSiteLaxMode {
 		t.Fatalf("wrong SameSite: %v", ck.SameSite)
+	}
+}
+
+func TestContextFormValue(t *testing.T) {
+
+	// simulate query
+	query, _ := url.ParseQuery("q=hello&page=2")
+
+	// simulate POST form
+	post := url.Values{}
+	post.Set("username", "eltrac")
+	post.Set("password", "123")
+
+	req := httptest.NewRequest("POST", "/test?q=hello&page=2", nil)
+	req.Form = make(url.Values)
+	for k, v := range query {
+		req.Form[k] = v
+	}
+	for k, v := range post {
+		req.Form[k] = append(req.Form[k], v...)
+	}
+
+	c := &Context{
+		R:     req,
+		Form:  req.Form,
+		Querys: req.URL.Query(),
+	}
+
+	if got := c.FormValue("q"); got != "hello" {
+		t.Errorf("FormValue(q) = %s, want hello", got)
+	}
+	if got := c.FormValue("username"); got != "eltrac" {
+		t.Errorf("FormValue(username) = %s, want eltrac", got)
+	}
+	if got := c.FormValue("password"); got != "123" {
+		t.Errorf("FormValue(password) = %s, want 123", got)
+	}
+}
+
+func TestContextPostFormValue(t *testing.T) {
+	body := bytes.NewBufferString("x=1&y=2")
+	req := httptest.NewRequest("POST", "/test?z=999", body)
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	req.ParseForm()
+
+	c := &Context{
+		R:     req,
+		Querys: req.URL.Query(),
+		Form:  req.Form,
+	}
+
+	// PostFormValue should NOT include query
+	if got := c.PostFormValue("z"); got != "" {
+		t.Errorf("PostFormValue(z) should be empty, got %s", got)
+	}
+
+	if got := c.PostFormValue("x"); got != "1" {
+		t.Errorf("PostFormValue(x) = %s, want 1", got)
+	}
+	if got := c.PostFormValue("y"); got != "2" {
+		t.Errorf("PostFormValue(y) = %s, want 2", got)
+	}
+}
+
+func TestContextQuery(t *testing.T) {
+	req := httptest.NewRequest("GET", "/search?kw=hello&sort=asc", nil)
+
+	c := &Context{
+		R:      req,
+		Querys: req.URL.Query(),
+	}
+
+	if got := c.Query("kw"); got != "hello" {
+		t.Errorf("Query(kw) = %s, want hello", got)
+	}
+
+	if got := c.Query("sort"); got != "asc" {
+		t.Errorf("Query(sort) = %s, want asc", got)
+	}
+
+	if got := c.Query("page"); got != "" {
+		t.Errorf("Query(page) should be empty, got %s", got)
+	}
+}
+
+func TestContextBindJSON(t *testing.T) {
+
+	type User struct {
+		Name  string `json:"name"`
+		Level int    `json:"level"`
+	}
+
+	data := `{"name":"Eltrac","level":42}`
+	req := httptest.NewRequest("POST", "/json", bytes.NewBufferString(data))
+
+	w := httptest.NewRecorder()
+
+	c := &Context{
+		W: w,
+		R: req,
+	}
+
+	var u User
+	err := c.BindJSON(&u)
+
+	if err != nil {
+		t.Fatalf("BindJSON returned error: %v", err)
+	}
+
+	if u.Name != "Eltrac" {
+		t.Errorf("BindJSON Name = %s, want Eltrac", u.Name)
+	}
+	if u.Level != 42 {
+		t.Errorf("BindJSON Level = %d, want 42", u.Level)
+	}
+}
+
+func TestBindJSONUnknownField(t *testing.T) {
+	type User struct {
+		Name string `json:"name"`
+	}
+
+	data := `{"name":"Eltrac", "extra":"BAD"}`
+	req := httptest.NewRequest("POST", "/json", bytes.NewBufferString(data))
+	w := httptest.NewRecorder()
+	c := &Context{W: w, R: req}
+
+	var u User
+	err := c.BindJSON(&u)
+
+	if err == nil {
+		t.Fatalf("expected error for unknown field, got nil")
 	}
 }
