@@ -41,6 +41,16 @@ e.Group("/api", func(api *growel.Group) {
 })
 ```
 
-## License
+## Roadmap
 
-MIT
+- [ ] Authorization with token
+- [ ] Panic recovery
+- [ ] CORS support
+- [ ] Custom 404 handler
+- [ ] `Context.Redirect()`
+- [ ] File Upload
+- [ ] Serve static files
+- [ ] `Engine.shutdown()`
+- [ ] TLS
+- [ ] Wildcard routing `*`
+- [ ] Parameter type support, `ParamInt()` `ParamString()`
