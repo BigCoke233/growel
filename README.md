@@ -7,33 +7,37 @@
 ## Usage
 
 ```go
-api := growel.New()
+e := growel.New()
 
-api.GET("/hello", func(c *growel.Context) {
+e.GET("/hello", func(c *growel.Context) {
 	c.JSON(200, map[string]string{
 		"message": "Hello, Growel!"
 	})
 })
 
-api.GET("/user/", func(c *growel.Context) {
-	c.JSON(200, Users)
-})
+e.Group("/api", func(api *growel.Group) {
+	api.Group("/user", func(user *growel.Group) {
+		user.GET("/", func(c *growel.Context) {
+			c.JSON(200, Users)
+		})
 
-api.GET("/user/:uid", func(c *growel.Context) {
-	uid, err := strconv.Atoi(c.Params["uid"])
-	if err != nil {
-		c.BadRequest("Invalid user ID")
-		return
-	}
+		user.GET("/:uid", func(c *growel.Context) {
+			uid, err := strconv.Atoi(c.Params["uid"])
+			if err != nil {
+				c.BadRequest("Invalid user ID")
+				return
+			}
 
-	for _, user := range Users {
-		if user.ID == uid {
-			c.JSON(200, user)
-			return
-		}
-	}
+			for _, user := range Users {
+				if user.ID == uid {
+					c.JSON(200, user)
+					return
+				}
+			}
 
-	c.NotFound("User not found")
+			c.NotFound("User not found")
+		})
+	})
 })
 ```
 
