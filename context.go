@@ -143,3 +143,36 @@ func (c *Context) BindJSON(v any) error {
 	dec.DisallowUnknownFields()
 	return dec.Decode(v)
 }
+
+/* === Parameter Type Helpers === */
+
+func (c *Context) Param(key string) string {
+	return c.Params[key]
+}
+
+func (c *Context) ParamInt(key string) int {
+	val, err := strconv.Atoi(c.Params[key])
+	if err != nil {
+		L.Error(err, "Context.ParamInt - cannot convert string to integer")
+		return -1
+	}
+	return val
+}
+
+func (c *Context) ParamFloat(key string) float64 {
+	val, err := strconv.ParseFloat(c.Params[key], 64)
+	if err != nil {
+		L.Error(err, "Context.ParamFloat - cannot convert string to float")
+		return -1
+	}
+	return val
+}
+
+func (c *Context) ParamBool(key string) bool {
+	val, err := strconv.ParseBool(c.Params[key])
+	if err != nil {
+		L.Error(err, "Context.ParamBool - cannot convert string to bool")
+		return false
+	}
+	return val
+}
