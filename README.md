@@ -52,5 +52,5 @@ e.Group("/api", func(api *growel.Group) {
 - [ ] Serve static files
 - [ ] `Engine.shutdown()`
 - [ ] TLS
-- [ ] Wildcard routing `*`
-- [ ] Parameter type support, `ParamInt()` `ParamString()`
+- [x] Wildcard routing `*`
+- [x] Parameter type support, `ParamInt()` `ParamString()`
