@@ -38,6 +38,7 @@ func (a *Engine) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		http.NotFound(w, req)
 		return
 	}
+	L.Info("Request received: %s %s", req.Method, req.URL.Path)
 
 	err := req.ParseForm()
 	if err != nil {
@@ -55,5 +56,7 @@ func (a *Engine) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 }
 
 func (api *Engine) Start(port string) {
+	L.Info("Server starting on port %s", port)
+	L.Info("%d routes loaded", len(api.router.routes))
 	http.ListenAndServe(port, api)
 }
