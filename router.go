@@ -1,6 +1,7 @@
 package growel
 
 import (
+	"slices"
 	"strings"
 )
 
@@ -31,7 +32,9 @@ func (r *Router) Find(method string, path string) (
 		}
 
 		// match path part number
-		if len(rt.parts) != len(parts) {
+		// if has ** wildcard, ignore part number
+		hasWildcard := slices.Contains(rt.parts, "**")
+		if !hasWildcard && len(rt.parts) != len(parts) {
 			continue
 		}
 
@@ -44,6 +47,14 @@ func (r *Router) Find(method string, path string) (
 			if strings.HasPrefix(seg, ":") {
 				params[seg[1:]] = parts[i]
 				continue
+			}
+
+			// wildcard
+			if seg == "*" {
+				continue
+			}
+			if seg == "**" {
+				break
 			}
 
 			// static mismatch
