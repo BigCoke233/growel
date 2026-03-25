@@ -1,3 +1,8 @@
+> [!important]
+> This project is moved to [Codeberg](https://codeberg.org/eltrac/growel). GitHub repository was archived on March 25, 2026.
+
+---
+
 # Growel
 
 ![](https://github.com/BigCoke233/growel/actions/workflows/go.yml/badge.svg)
